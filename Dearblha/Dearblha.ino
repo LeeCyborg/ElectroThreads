@@ -4,10 +4,10 @@
 #endif
 
 // This isn't what she wants really, just a test.
-#define PIN 12
+#define PIN 5
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(160, PIN, NEO_GRB + NEO_KHZ800);
 // this constant won't change:
-const int  buttonPin = 2;    // the pin that the pushbutton is attached to
+const int  buttonPin = 6;    // the pin that the pushbutton is attached to
 const int ledPin = 13;       // the pin that the LED is attached to
 
 // Variables will change:
@@ -30,7 +30,8 @@ void setup() {
 void loop() {
   // read the pushbutton input pin:
   buttonState = digitalRead(buttonPin);
-
+  Serial.println(buttonState);
+  Serial.println(buttonPushCounter);
   // compare the buttonState to its previous state
   if (buttonState != lastButtonState) {
     // if the state has changed, increment the counter
@@ -55,7 +56,8 @@ void loop() {
 
 
   if (buttonPushCounter == 0) {
-    simpleWave(0.1, 5, 10);
+        colorWipe(strip.Color(25, 20, 100), 50); // Red
+
   } else if (buttonPushCounter == 1) {
     colorWipe(strip.Color(255, 0, 0), 50); // Red
 
