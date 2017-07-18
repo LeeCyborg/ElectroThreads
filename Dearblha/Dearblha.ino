@@ -25,6 +25,8 @@ int blackStart = NUMPIXELS / 6 * 5;
 int blackEnd = NUMPIXELS;
 bool justChanged = false;
 
+int del = 0;
+
 void setup() {
   // initialize the button pin as a input:
   pinMode(buttonPin, INPUT);
@@ -66,8 +68,9 @@ void loop() {
     if (justChanged) colorWipe(strip.Color(255, 255, 255), 50); // Everything bright (particular ones for use for optics will be chosen later)
 
   } else if (buttonPushCounter == 2) {
-    flow(50); //the problem with the button is here - if the button is pressed while the delay inside this function is being run then nothing happens.
+    flow(5); //the problem with the button is here - if the button is pressed while the delay inside this function is being run then nothing happens.
     //ideally we should use a hardware interrupt
+    //but for now we'll do waits of 5ms, and only actually do the flow every tenth time.
   }
   else if (buttonPushCounter == 3) {
     if (justChanged) colorWipe(strip.Color(255, 255, 255), 50); // Everything bright
@@ -107,55 +110,62 @@ void colorWipe(uint32_t c, uint8_t wait) {
 }
 
 void flow(uint8_t wait) {
-  for (int i = 0; i < strip.numPixels(); i++) {
+  del++;
 
-    uint8_t col = 0;
+  if (del == 10) {
+    del = 0;
+    
+    for (int i = 0; i < strip.numPixels(); i++) {
 
-    if (whiteStart > whiteEnd) {
-      //white LEDs have looped around
-      if (i >= whiteStart || i < whiteEnd) col += 1;
-    }
-    else {
-      if (i >= whiteStart && i < whiteEnd) col += 1;
+      uint8_t col = 0;
+
+      if (whiteStart > whiteEnd) {
+        //white LEDs have looped around
+        if (i >= whiteStart || i < whiteEnd) col += 1;
+      }
+      else {
+        if (i >= whiteStart && i < whiteEnd) col += 1;
+      }
+
+      if (blackStart > blackEnd) {
+        //black LEDs have looped around
+        if (i >= blackStart || i < blackEnd) col += 2;
+      }
+      else {
+        if (i >= blackStart && i < blackEnd) col += 2;
+      }
+
+      if (col == 1) strip.setPixelColor(i, strip.Color(255, 255, 255)); //white pixel
+      if (col == 2) strip.setPixelColor(i, strip.Color( 70,  70,  70)); //black pixel
+      if (col == 3) strip.setPixelColor(i, strip.Color( 90,  90,  90)); //grey  pixel
     }
 
-    if (blackStart > blackEnd) {
-      //black LEDs have looped around
-      if (i >= blackStart || i < blackEnd) col += 2;
-    }
-    else {
-      if (i >= blackStart && i < blackEnd) col += 2;
+
+    strip.show(); // This sends the updated pixel color to the hardware.
+
+
+    whiteStart++;
+    whiteEnd++;
+
+    blackStart--;
+    blackEnd--;
+
+    //loop around
+    if (whiteEnd > NUMPIXELS) {
+      whiteEnd = 0;
     }
 
-    if (col == 1) strip.setPixelColor(i, strip.Color(255, 255, 255)); //white pixel
-    if (col == 2) strip.setPixelColor(i, strip.Color( 70,  70,  70)); //black pixel
-    if (col == 3) strip.setPixelColor(i, strip.Color( 90,  90,  90)); //grey  pixel
+    if (whiteStart == NUMPIXELS) {
+      whiteStart = 0;
+    }
+
+    if (blackStart == 0) {
+      blackStart = NUMPIXELS - 1;
+    }
+
+    if (blackEnd == 0) {
+      blackEnd = NUMPIXELS;
+    }
   }
-
-
-  strip.show(); // This sends the updated pixel color to the hardware.
   delay(wait); // Delay for a period of time (in milliseconds).
-
-  whiteStart++;
-  whiteEnd++;
-
-  blackStart--;
-  blackEnd--;
-
-  //loop around
-  if (whiteEnd > NUMPIXELS) {
-    whiteEnd = 0;
-  }
-
-  if (whiteStart == NUMPIXELS) {
-    whiteStart = 0;
-  }
-
-  if (blackStart == 0) {
-    blackStart = NUMPIXELS - 1;
-  }
-
-  if (blackEnd == 0) {
-    blackEnd = NUMPIXELS;
-  }
 }
