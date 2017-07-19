@@ -68,12 +68,15 @@ void loop() {
     if (justChanged) colorWipe(strip.Color(255, 255, 255), 50); // Everything bright (particular ones for use for optics will be chosen later)
 
   } else if (buttonPushCounter == 2) {
-    flow(5); //the problem with the button is here - if the button is pressed while the delay inside this function is being run then nothing happens.
+    flow(10); //the problem with the button is here - if the button is pressed while the delay inside this function is being run then nothing happens.
     //ideally we should use a hardware interrupt
     //but for now we'll do waits of 5ms, and only actually do the flow every tenth time.
   }
   else if (buttonPushCounter == 3) {
-    if (justChanged) colorWipe(strip.Color(255, 255, 255), 50); // Everything bright
+    if (justChanged){
+      colorWipe(strip.Color(0, 0, 0), 50); // Everything bright
+      colorWipe(strip.Color(255, 255, 255), 50); // Everything bright
+    }
   }
   if (buttonPushCounter == 4) {
     buttonPushCounter = 0;
@@ -169,3 +172,4 @@ void flow(uint8_t wait) {
   }
   delay(wait); // Delay for a period of time (in milliseconds).
 }
+
