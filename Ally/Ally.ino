@@ -1,4 +1,4 @@
-int speedVal = 90; //change to alter speed
+int speedVal = 50; //change to alter speed
 int ledPin = 5;    // MF board pin 5
 
 void setup() {
