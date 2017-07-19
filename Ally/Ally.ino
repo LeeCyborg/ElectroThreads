@@ -1,7 +1,8 @@
-int speedVal = 30; //change to alter speed
+int speedVal = 90; //change to alter speed
 int ledPin = 5;    // MF board pin 5
 
 void setup() {
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {

@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 const int sensorPin = 0;    // pin that the sensor is attached to
 // variables:
-int PIN = 10;
+int PIN = 12;
 int Pixels = 60;
 #define BG 1
 uint32_t currentBg = random(256);
@@ -25,9 +25,10 @@ void loop() {
   //Serial.println(sensorValue);
   Serial.println(analogRead(0));
   if(analogRead(0) < 165) { 
-    colorWipe(strip.Color(250, 0, 0), 0); // loose
+    ripple();
+    
   } else {
-      ripple();
+    colorWipe(strip.Color(250, 0, 0), 0); // loose  
   }
 }
 
@@ -45,11 +46,11 @@ void ripple() {
       nextBg = 0;
 
     for(uint16_t l = 0; l < Pixels; l++) {
-      strip.setPixelColor(l, Wheel(40, 1));
+      strip.setPixelColor(l, Wheel(80, 1));
     }
   if (step == -1) {
     center = random(Pixels);
-    color = 95;
+    color = 80;
     step = 0;
   }
   if (step == 0) {
