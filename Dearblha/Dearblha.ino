@@ -6,6 +6,9 @@
 // This isn't what she wants really, just a test.
 #define PIN 5
 #define NUMPIXELS 60
+int fadeRate = 0;
+int MaxBrightness = 255;
+int TotalSteps = 15;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 // this constant won't change:
@@ -73,9 +76,10 @@ void loop() {
     //but for now we'll do waits of 5ms, and only actually do the flow every tenth time.
   }
   else if (buttonPushCounter == 3) {
-    if (justChanged){
-      colorWipe(strip.Color(0, 0, 0), 50); // Everything bright
-      colorWipe(strip.Color(255, 255, 255), 50); // Everything bright
+    if (justChanged) {
+        colorWipe(strip.Color(0,0,0), 0);
+        delay(3000);
+        setSection(0, 60, 255, 255, 255);
     }
   }
   if (buttonPushCounter == 4) {
@@ -117,7 +121,7 @@ void flow(uint8_t wait) {
 
   if (del == 10) {
     del = 0;
-    
+
     for (int i = 0; i < strip.numPixels(); i++) {
 
       uint8_t col = 0;
@@ -172,4 +176,26 @@ void flow(uint8_t wait) {
   }
   delay(wait); // Delay for a period of time (in milliseconds).
 }
+void setSection(int start, int finish, int Nred, int Ngreen, int Nblue) {
+  uint32_t c = strip.getPixelColor(start);
+  uint8_t  redCur = (c >> 16) & 0xFF;
+  uint8_t  greenCur = (c >>  8) & 0xFF;
+  uint8_t  blueCur = c & 0xFF;
+  uint8_t redNew = Nred;
+  uint8_t greenNew = Ngreen;
+  uint8_t blueNew = Nblue;
+  for (int i = 1; i < TotalSteps; i++)
+  {
+    uint8_t red = (((redCur * (TotalSteps - i)) + (redNew * i)) / TotalSteps);
+    uint8_t green = (((greenCur * (TotalSteps - i)) + (greenNew * i)) / TotalSteps);
+    uint8_t blue = (((blueCur * (TotalSteps - i)) + (blueNew * i)) / TotalSteps);
+    for (int j = start; j < finish + 1; j++) {
+      strip.setPixelColor(j, red, green, blue);
+      strip.show();
+      delay(fadeRate);
+    }
+  }
+}
+
+
 
